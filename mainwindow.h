@@ -34,7 +34,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     USBManager usbmanager;
-    QProcess *scrcpyProcess;
+    QProcess *scrcpyProcess = nullptr;
     void startScrcpy();
 };
 #endif // MAINWINDOW_H
