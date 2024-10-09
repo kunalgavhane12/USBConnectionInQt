@@ -6,16 +6,24 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    startScrcpy();
 }
 
 MainWindow::~MainWindow()
 {
+    if(scrcpyProcess)
+    {
+        scrcpyProcess->terminate();
+    }
     delete ui;
 }
 
 void MainWindow::on_connectBtn_clicked()
 {
-    if(usbmanager.openDevice(0x2d95, 0x6002))
+      startScrcpy();
+    // if(usbmanager.openDevice(0x2d95, 0x6002)) // vid //pid
+    // if(usbmanager.openDevice(0x2d95, 0x6003)) // vid //pid src
+    if(usbmanager.openDevice(0x22d9, 0x2765)) // vid //pid src
     {
         qDebug() << "Device connected.";
     }
@@ -26,20 +34,42 @@ void MainWindow::on_connectBtn_clicked()
 }
 
 
-void MainWindow::on_readBtn_clicked()
-{
+// void MainWindow::on_readBtn_clicked()
+// {
 
-}
+// }
 
 
-void MainWindow::on_writeBtn_clicked()
-{
+// void MainWindow::on_writeBtn_clicked()
+// {
 
-}
+// }
 
 
 void MainWindow::on_disconnectBtn_clicked()
 {
+    if(scrcpyProcess)
+    {
+        scrcpyProcess->terminate();
+    }
     usbmanager.disconnectDevice();
+}
+
+void MainWindow::startScrcpy()
+{
+    scrcpyProcess = new QProcess(this);
+    QStringList arguments;
+    arguments << "--max-size" << "800" << "--bit-rate" << "2M" << "--stay-awake";
+
+    scrcpyProcess->start("scrcpy", arguments);
+
+    if(!scrcpyProcess->waitForStarted())
+    {
+        qDebug() << "Failed to start scrcpy.";
+    }
+    else
+    {
+        qDebug() << "scrcpy started successfully.";
+    }
 }
 
